@@ -23,7 +23,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'owasp/zap2docker-stable'
           target: ${{ env.SIT_SITE }}
-          rules_file_name: './net48-app1/.zap/rules.tsv'
+          rules_file_name: 'net48-app1/.zap/rules.tsv'
           fail_action: true
 
   repository_dispatch:
