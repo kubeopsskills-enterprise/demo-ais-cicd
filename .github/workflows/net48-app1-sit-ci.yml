@@ -12,7 +12,7 @@ on:
 
 env:
   SOLUTION_PATH: .\net48-app1\
-  APP_CSPROJ: .\SimpleNetFrame\SimpleNetFrame.csproj
+  APP_CSPROJ: .\net48-app1\SimpleNetFrame\SimpleNetFrame.csproj
 
 jobs:
   build:
