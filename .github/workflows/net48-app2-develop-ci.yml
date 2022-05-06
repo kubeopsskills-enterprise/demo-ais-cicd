@@ -1,4 +1,4 @@
-name: Develop CI
+name: APP 2 Develop CI
 
 on:
   push:
