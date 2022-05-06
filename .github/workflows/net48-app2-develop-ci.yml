@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - 'net48-app2/**'
   pull_request:
     branches:
       - develop
+    paths:
+      - 'net48-app2/**'
   workflow_dispatch:
 
 env:
@@ -40,7 +44,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore NuGet packages
-        run: nuget restore
+        run: cd ${{ env.SOLUTION_PATH }} && nuget restore
 
       - name: Build unit test project
         id: built-unit-test-project
