@@ -12,3 +12,5 @@
 10027	IGNORE	Information Disclosure
 10109	IGNORE	Modern Web Application
 10104	IGNORE	User Agent Fuzzer
+10035	IGNORE	Strict-Transport-Security Header Not Set
+10047	IGNORE	HTTPS Content Available via HTTP
