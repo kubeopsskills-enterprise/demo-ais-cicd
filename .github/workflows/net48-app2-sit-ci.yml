@@ -1,4 +1,4 @@
-name: APP 1 SIT CI
+name: APP 2 SIT CI
 
 on:
   push:
