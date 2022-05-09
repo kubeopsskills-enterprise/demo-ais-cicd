@@ -2,10 +2,10 @@ name: APP 1 SIT CI
 
 on:
   push:
-    tags:
-      - "*.*.*"
     paths:
       - 'net48-app1/**'
+    tags:
+      - "*.*.*"
   workflow_dispatch:
     inputs:
       tags:
