@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*.*.*"
+    paths:
+      - 'net48-app1/**'
   workflow_dispatch:
     inputs:
       tags:
