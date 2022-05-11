@@ -22,11 +22,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v2
-        working-directory: ng-app1/
         with:
           node-version: '16'
           cache: 'npm'
-          cache-dependency-path: ./package-lock.json
+          cache-dependency-path: ./ng-app1//package-lock.json
 
       - name: Install dependencies
         working-directory: ng-app1/
@@ -37,10 +36,9 @@ jobs:
         run: npm run test -- --no-watch --browsers=ChromeHeadlessCI --code-coverage
 
       - uses: actions/upload-artifact@v3
-        working-directory: ng-app1/
         with:
           name: coverage-report
-          path: ./coverage
+          path: ./ng-app1/coverage
 
   codeql:
     name: CodeQL
@@ -60,17 +58,14 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Initialize CodeQL
-      working-directory: ng-app1/
       uses: github/codeql-action/init@v1
       with:
         languages: ${{ matrix.language }}
 
     - name: Autobuild
-      working-directory: ng-app1/
       uses: github/codeql-action/autobuild@v1
 
     - name: Perform CodeQL Analysis
-      working-directory: ng-app1/
       uses: github/codeql-action/analyze@v1
 
   repository_dispatch:

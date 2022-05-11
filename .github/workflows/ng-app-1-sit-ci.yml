@@ -40,11 +40,10 @@ jobs:
           ref: ${{ env.RELEASE_VERSION }}
 
       - uses: actions/setup-node@v2
-        working-directory: ng-app1/
         with:
           node-version: '16'
           cache: 'npm'
-          cache-dependency-path: ./package-lock.json
+          cache-dependency-path: ./ng-app1/package-lock.json
 
       - name: Install dependencies
         working-directory: ng-app1/
@@ -62,10 +61,9 @@ jobs:
           echo "::set-output name=release_version::"${{ env.RELEASE_VERSION }}
           
       - name: Upload Artifact Release
-        working-directory: ng-app1/
         uses: softprops/action-gh-release@v1
         with:
-          files: ./artifact-ng-app-1-${{ env.RELEASE_VERSION }}.zip
+          files: ./ng-app1/artifact-ng-app-1-${{ env.RELEASE_VERSION }}.zip
           tag_name: ${{ env.RELEASE_VERSION }}
 
   repository_dispatch:
