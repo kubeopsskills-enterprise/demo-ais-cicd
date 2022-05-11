@@ -61,7 +61,7 @@ jobs:
   trigger_app2:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_app_2 == 'true'
-    uses: ./.github/workflows/net48-app2-sit-ci.yml@main
+    uses: ./.github/workflows/net48-app2-sit-ci.yml
 
       # - uses: ./.github/workflows/net48-app1-sit-ci.yml@main
       #   if: env.TRIGGER_SIT_APP1 == 'true'
