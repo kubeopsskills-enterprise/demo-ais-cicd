@@ -1,4 +1,4 @@
-name: NG-APP-1 Develop CI
+name: NG-APP1 Develop CI
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
 
       - name: Repository dispatch
         run: |
-          DISPATCH_BODY=$(jq '.event_type |= "dev-ng-app-1-repository-dispatch" | .client_payload.git_reference |= "-"' ./.github/template/env-repository-dispatch.json)
+          DISPATCH_BODY=$(jq '.event_type |= "dev-ng-app1-repository-dispatch" | .client_payload.git_reference |= "-"' ./.github/template/env-repository-dispatch.json)
           echo $DISPATCH_BODY
           curl -v --location --request POST 'https://api.github.com/repos/kubeopsskills-enterprise/demo-ais-cicd-pipeline/dispatches' \
             --header 'Authorization: Bearer ${{ secrets.ORG_PAT }}' \
