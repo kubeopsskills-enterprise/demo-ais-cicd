@@ -70,6 +70,7 @@ jobs:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_app_1 == 'true'
     uses: ./.github/workflows/net48-app1-sit-ci.yml
+    secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
 
@@ -77,6 +78,7 @@ jobs:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_app_2 == 'true'
     uses: ./.github/workflows/net48-app2-sit-ci.yml
+    secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
 
@@ -84,5 +86,6 @@ jobs:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_ng_app_1 == 'true'
     uses: ./.github/workflows/ng-app1-sit-ci.yml
+    secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
