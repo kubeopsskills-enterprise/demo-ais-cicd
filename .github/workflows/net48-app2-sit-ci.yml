@@ -6,6 +6,11 @@ on:
   #     - 'net48-app2/**'
   #   tags:
   #     - "*.*.*"
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       tags:
@@ -26,17 +31,23 @@ jobs:
       release_version: ${{ steps.packing-artifact-release.outputs.release_version }}
 
     steps:
-      - name: Set env (Triggered by tagging)
-        if: github.event.base_ref=='refs/heads/main'
-        run: |
-          echo "RELEASE_VERSION=${{ github.ref_name }}"
-          echo "RELEASE_VERSION=${{ github.ref_name }}" >> $env:GITHUB_ENV
+      # - name: Set env (Triggered by tagging)
+      #   if: github.event.base_ref=='refs/heads/main'
+      #   run: |
+      #     echo "RELEASE_VERSION=${{ github.ref_name }}"
+      #     echo "RELEASE_VERSION=${{ github.ref_name }}" >> $env:GITHUB_ENV
 
-      - name: Set env (Triggered by workflow dispatch)
-        if: github.event_name == 'workflow_dispatch'
+      # - name: Set env (Triggered by workflow dispatch)
+      #   if: github.event_name == 'workflow_dispatch'
+      #   run: |
+      #     echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
+      #     echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $env:GITHUB_ENV
+
+      - name: Set env (Triggered by workflow call)
+        if: github.event_name == 'workflow_call'
         run: |
-          echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
-          echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $env:GITHUB_ENV
+          echo "RELEASE_VERSION=${{ inputs.tag }}"
+          echo "RELEASE_VERSION=${{ inputs.tag }}" >> $env:GITHUB_ENV
 
       - name: Checkout repository
         uses: actions/checkout@v3

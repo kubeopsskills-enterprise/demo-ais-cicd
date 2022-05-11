@@ -43,14 +43,25 @@ jobs:
             do
               case $changedFile in
 
+                *"net48-app1/"*)
+                  echo "TRIGGER_SIT_APP2=true" >> $GITHUB_ENV
+                  ;;
+
                 *"net48-app2/"*)
                   echo "TRIGGER_SIT_APP2=true" >> $GITHUB_ENV
                   ;;
 
               esac
             done
+      
+      - name: Trigger APP1 sit-ci.yml
+        uses: ./.github/workflows/net48-app1-sit-ci
+        if: env.TRIGGER_SIT_APP1 == 'true'
+        with:
+          token: ${{ secrets.ORG_PAT }}
 
       - name: Trigger APP2 sit-ci.yml
+        uses: ./.github/workflows/net48-app2-sit-ci
         if: env.TRIGGER_SIT_APP2 == 'true'
-        run: |
-          echo "TRIGGER APP2 SIT-CI"
+        with:
+          token: ${{ secrets.ORG_PAT }}
