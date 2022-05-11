@@ -53,15 +53,13 @@ jobs:
 
               esac
             done
-      
-      - name: Trigger APP1 sit-ci.yml
-        uses: ./.github/workflows/net48-app1-sit-ci.yml@main
+
+      - uses: ./.github/workflows/net48-app1-sit-ci.yml@main
         if: env.TRIGGER_SIT_APP1 == 'true'
         with:
           token: ${{ secrets.ORG_PAT }}
 
-      - name: Trigger APP2 sit-ci.yml
-        uses: ./.github/workflows/net48-app2-sit-ci.yml@main
+      - uses: ./.github/workflows/net48-app2-sit-ci.yml@main
         if: env.TRIGGER_SIT_APP2 == 'true'
         with:
           token: ${{ secrets.ORG_PAT }}
