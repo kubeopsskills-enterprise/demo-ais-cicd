@@ -1,0 +1,89 @@
+name: NG-APP-1 Develop CI
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'ng-app1/**'
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'ng-app1/**'
+  workflow_dispatch:
+    
+jobs:
+  unit_tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    working-directory: ng-app1/
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: ./package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test -- --no-watch --browsers=ChromeHeadlessCI --code-coverage
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./coverage
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    working-directory: ng-app1/
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+
+  repository_dispatch:
+    if: github.event_name != 'pull_request'
+    name: Repository dispatch
+    needs: [unit_tests, codeql]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Repository dispatch
+        run: |
+          DISPATCH_BODY=$(jq '.event_type |= "dev-ng-app-1-repository-dispatch" | .client_payload.git_reference |= "-"' ./.github/template/env-repository-dispatch.json)
+          echo $DISPATCH_BODY
+          curl -v --location --request POST 'https://api.github.com/repos/kubeopsskills-enterprise/demo-ais-cicd-pipeline/dispatches' \
+            --header 'Authorization: Bearer ${{ secrets.ORG_PAT }}' \
+            --header 'accept: application/vnd.github.v3+json' \
+            --header 'Content-Type: application/json' \
+            --data-raw "$DISPATCH_BODY"
