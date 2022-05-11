@@ -1,11 +1,11 @@
 name: APP 1 SIT CI
 
 on:
-  push:
-    paths:
-      - 'net48-app1/**'
-    tags:
-      - "*.*.*"
+  # push:
+  #   paths:
+  #     - 'net48-app1/**'
+  #   tags:
+  #     - "*.*.*"
   workflow_dispatch:
     inputs:
       tags:

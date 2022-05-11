@@ -1,0 +1,39 @@
+name: Common SIT CI
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'tags'
+        required: true 
+
+jobs:
+  trigger_related_workflows:
+    name: Trigger related workflows
+    runs-on: ubuntu-latest
+    if: github.event.base_ref=='refs/heads/main' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Set env (Triggered by tagging)
+        if: github.event.base_ref=='refs/heads/main'
+        run: |
+          echo "RELEASE_VERSION=${{ github.ref_name }}"
+          echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Set env (Triggered by workflow dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
+          echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $GITHUB_ENV
+
+      - name: Observe changed files and trigger related SIT CI workflows
+        run: |
+          changedFilesString=$(git diff --name-only HEAD HEAD~1)
+          changedFiles=(${changedFilesString// /})
+          for changedFile in "${changedFiles[@]}";
+            do
+              echo $changedFile
+            done
