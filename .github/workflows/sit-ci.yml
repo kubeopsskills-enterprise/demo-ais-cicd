@@ -18,6 +18,7 @@ jobs:
 
     outputs:
       trigger_app_2: ${{ steps.changes-observer.outputs.trigger_app_2 }}
+      release_version: ${{ steps.changes-observer.outputs.release_version }}
     
     steps:
       - name: Set env (Triggered by tagging)
@@ -41,6 +42,7 @@ jobs:
       - name: Observe changed files and trigger related SIT CI workflows
         id: changes-observer
         run: |
+          echo "::set-output name=release_version::${{ env.RELEASE_VERSION }}"
           changedFilesString=$(git diff --name-only HEAD HEAD~1)
           changedFiles=(${changedFilesString// /})
           for changedFile in "${changedFiles[@]}";
@@ -62,6 +64,8 @@ jobs:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_app_2 == 'true'
     uses: ./.github/workflows/net48-app2-sit-ci.yml
+    with:
+      tag: needs.trigger_related_workflows.outputs.release_version
 
       # - uses: ./.github/workflows/net48-app1-sit-ci.yml@main
       #   if: env.TRIGGER_SIT_APP1 == 'true'
