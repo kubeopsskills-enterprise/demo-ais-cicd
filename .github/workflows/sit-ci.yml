@@ -83,6 +83,6 @@ jobs:
   trigger_ng_app1:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_ng_app_1 == 'true'
-    uses: ./.github/workflows/ng-app-1-sit-ci.yml
+    uses: ./.github/workflows/ng-app1-sit-ci.yml
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
