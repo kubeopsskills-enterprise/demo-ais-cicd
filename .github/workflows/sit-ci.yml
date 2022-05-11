@@ -29,11 +29,6 @@ jobs:
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $GITHUB_ENV
 
-      # - name: Checkout repository
-      #   uses: actions/checkout@v3
-      #   with:
-      #     ref: main
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -46,5 +41,16 @@ jobs:
           changedFiles=(${changedFilesString// /})
           for changedFile in "${changedFiles[@]}";
             do
-              echo $changedFile
+              case $changedFile in
+
+                *"net48-app2/"*)
+                  echo "TRIGGER_SIT_APP2=true" >> $GITHUB_ENV
+                  ;;
+
+              esac
             done
+
+      - name: Trigger APP2 sit-ci.yml
+        if: env.TRIGGER_SIT_APP2 == 'true'
+        run: |
+          echo "TRIGGER APP2 SIT-CI"
