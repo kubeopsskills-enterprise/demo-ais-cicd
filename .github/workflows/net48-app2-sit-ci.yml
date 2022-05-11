@@ -1,9 +1,9 @@
-name: APP 1 SIT CI
+name: APP 2 SIT CI
 
 on:
   # push:
   #   paths:
-  #     - 'net48-app1/**'
+  #     - 'net48-app2/**'
   #   tags:
   #     - "*.*.*"
   workflow_call:
@@ -18,8 +18,8 @@ on:
         required: true 
 
 env:
-  SOLUTION_PATH: .\net48-app1\
-  APP_CSPROJ: .\net48-app1\SimpleNetFrame\SimpleNetFrame.csproj
+  SOLUTION_PATH: .\net48-app2\
+  APP_CSPROJ: .\net48-app2\SimpleNetFrame\SimpleNetFrame.csproj
 
 jobs:
   build:
@@ -81,13 +81,13 @@ jobs:
       - name: Packing Arifact Files
         id: packing-artifact-release
         run: |
-          7z a artifact-${{ secrets.MAN_NET48_APP_NAME }}-$env:RELEASE_VERSION.zip $env:GITHUB_WORKSPACE"\published\*"
+          7z a artifact-net48-app2-$env:RELEASE_VERSION.zip $env:GITHUB_WORKSPACE"\published\*"
           echo "::set-output name=release_version::${{ env.RELEASE_VERSION }}"
           
       - name: Upload Artifact Release
         uses: softprops/action-gh-release@v1
         with:
-          files: .\artifact-${{ secrets.MAN_NET48_APP_NAME }}-${{ env.RELEASE_VERSION }}.zip
+          files: .\artifact-net48-app2-${{ env.RELEASE_VERSION }}.zip
           tag_name: ${{ env.RELEASE_VERSION }}
 
   repository_dispatch:
@@ -104,9 +104,9 @@ jobs:
 
       - name: Repository dispatch
         run: |
-          DISPATCH_BODY=$(jq '.event_type |= "sit-${{ secrets.MAN_NET48_APP_NAME }}-repository-dispatch" | .client_payload.git_reference |= "'${{ env.retrieved_reference }}'"' ./.github/template/env-repository-dispatch.json)
+          DISPATCH_BODY=$(jq '.event_type |= "sit-net48-app2-repository-dispatch" | .client_payload.git_reference |= "'${{ env.retrieved_reference }}'"' ./.github/template/env-repository-dispatch.json)
           echo $DISPATCH_BODY
-          curl -v --location --request POST 'https://api.github.com/repos/kubeopsskills-enterprise/${{ secrets.MAN_NET48_APP_NAME }}-pipeline/dispatches' \
+          curl -v --location --request POST 'https://api.github.com/repos/kubeopsskills-enterprise/demo-ais-cicd-pipeline/dispatches' \
             --header 'Authorization: Bearer ${{ secrets.ORG_PAT }}' \
             --header 'accept: application/vnd.github.v3+json' \
             --header 'Content-Type: application/json' \
