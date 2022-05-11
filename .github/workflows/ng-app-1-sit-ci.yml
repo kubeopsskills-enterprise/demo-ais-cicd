@@ -17,7 +17,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     if: github.event.base_ref=='refs/heads/main' || github.event_name == 'workflow_dispatch'
-    working-directory: ng-app1/
     
     outputs:
       release_version: ${{ steps.packing-artifact-release.outputs.release_version }}
@@ -41,29 +40,29 @@ jobs:
           ref: ${{ env.RELEASE_VERSION }}
 
       - uses: actions/setup-node@v2
+        working-directory: ng-app1/
         with:
           node-version: '16'
           cache: 'npm'
           cache-dependency-path: ./package-lock.json
 
       - name: Install dependencies
+        working-directory: ng-app1/
         run: npm install
 
       - name: Build
+        working-directory: ng-app1/
         run: npm run build
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: ng-app
-          path: dist/
-
       - name: Packing Arifact Files
+        working-directory: ng-app1/
         id: packing-artifact-release
         run: |
           zip artifact-ng-app-1-${{ env.RELEASE_VERSION }}.zip -r ./dist/ng-app-1
           echo "::set-output name=release_version::"${{ env.RELEASE_VERSION }}
           
       - name: Upload Artifact Release
+        working-directory: ng-app1/
         uses: softprops/action-gh-release@v1
         with:
           files: ./artifact-ng-app-1-${{ env.RELEASE_VERSION }}.zip
