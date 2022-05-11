@@ -29,10 +29,16 @@ jobs:
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $GITHUB_ENV
 
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: main
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ref: ${{ env.RELEASE_VERSION }}
+          fetch-depth: '2'
 
       - name: Observe changed files and trigger related SIT CI workflows
         run: |
