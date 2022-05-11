@@ -15,6 +15,9 @@ jobs:
     name: Trigger related workflows
     runs-on: ubuntu-latest
     if: github.event.base_ref=='refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    outputs:
+      trigger_app_2: ${{ steps.changes-observer.outputs.trigger_app_2 }}
     
     steps:
       - name: Set env (Triggered by tagging)
@@ -36,6 +39,7 @@ jobs:
           fetch-depth: '2'
 
       - name: Observe changed files and trigger related SIT CI workflows
+        id: changes-observer
         run: |
           changedFilesString=$(git diff --name-only HEAD HEAD~1)
           changedFiles=(${changedFilesString// /})
@@ -48,18 +52,23 @@ jobs:
                   ;;
 
                 *"net48-app2/"*)
-                  echo "TRIGGER_SIT_APP2=true" >> $GITHUB_ENV
+                  echo "::set-output name=trigger_app_2::true"
                   ;;
 
               esac
             done
 
-      - uses: ./.github/workflows/net48-app1-sit-ci.yml@main
-        if: env.TRIGGER_SIT_APP1 == 'true'
-        with:
-          token: ${{ secrets.ORG_PAT }}
+  trigger_app2:
+    needs: trigger_related_workflows
+    if: needs.trigger_related_workflows.outputs.trigger_app_2 == 'true'
+    uses: ./.github/workflows/net48-app2-sit-ci.yml@main
 
-      - uses: ./.github/workflows/net48-app2-sit-ci.yml@main
-        if: env.TRIGGER_SIT_APP2 == 'true'
-        with:
-          token: ${{ secrets.ORG_PAT }}
+      # - uses: ./.github/workflows/net48-app1-sit-ci.yml@main
+      #   if: env.TRIGGER_SIT_APP1 == 'true'
+      #   with:
+      #     token: ${{ secrets.ORG_PAT }}
+
+      # - uses: ./.github/workflows/net48-app2-sit-ci.yml@main
+      #   if: env.TRIGGER_SIT_APP2 == 'true'
+      #   with:
+      #     token: ${{ secrets.ORG_PAT }}
