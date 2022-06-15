@@ -1,45 +1,42 @@
 name: Common SIT CI
-
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - v[0-9]+.[0-9]+.[0-9]+
   workflow_dispatch:
     inputs:
       tags:
-        description: 'tags'
-        required: true 
-
+        description: tags
+        required: true
 jobs:
   trigger_related_workflows:
     name: Trigger related workflows
     runs-on: ubuntu-latest
-    if: github.event.base_ref=='refs/heads/main' || github.event_name == 'workflow_dispatch'
-
+    if: >-
+      github.event.base_ref=='refs/heads/main' || github.event_name ==
+      'workflow_dispatch'
     outputs:
       trigger_app_1: ${{ steps.changes-observer.outputs.trigger_app_1 }}
       trigger_app_2: ${{ steps.changes-observer.outputs.trigger_app_2 }}
+      trigger_ng_app1: ${{ steps.changes-observer.outputs.trigger_ng_app1 }}
+      trigger_ng_app2: ${{ steps.changes-observer.outputs.trigger_ng_app2 }}
       release_version: ${{ steps.changes-observer.outputs.release_version }}
-    
     steps:
       - name: Set env (Triggered by tagging)
         if: github.event.base_ref=='refs/heads/main'
         run: |
           echo "RELEASE_VERSION=${{ github.ref_name }}"
           echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-
       - name: Set env (Triggered by workflow dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}"
           echo "RELEASE_VERSION=${{ github.event.inputs.tags }}" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           ref: ${{ env.RELEASE_VERSION }}
           fetch-depth: '2'
-
       - name: Observe changed files and trigger related SIT CI workflows
         id: changes-observer
         run: |
@@ -57,22 +54,41 @@ jobs:
                 *"net48-app2/"*)
                   echo "::set-output name=trigger_app_2::true"
                   ;;
+                *"ng-app1/"*)
+                  echo "::set-output name=trigger_ng_app1::true"
+                  ;;
+
+                *"ng-app2/"*)
+                  echo "::set-output name=trigger_ng_app2::true"
+                  ;;
 
               esac
             done
-
-  trigger_app1:
+  trigger_app_1:
     needs: trigger_related_workflows
-    if: needs.trigger_related_workflows.outputs.trigger_app_1 == 'true'
+    if: needs.trigger_related_workflows.outputs.trigger_app_1== 'true'
     uses: ./.github/workflows/net48-app1-sit-ci.yml
     secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
-
-  trigger_app2:
+  trigger_app_2:
     needs: trigger_related_workflows
-    if: needs.trigger_related_workflows.outputs.trigger_app_2 == 'true'
+    if: needs.trigger_related_workflows.outputs.trigger_app_2== 'true'
     uses: ./.github/workflows/net48-app2-sit-ci.yml
+    secrets: inherit
+    with:
+      tag: needs.trigger_related_workflows.outputs.release_version
+  trigger_ng_app1:
+    needs: trigger_related_workflows
+    if: needs.trigger_related_workflows.outputs.trigger_ng_app1== 'true'
+    uses: ./.github/workflows/ng-app1-sit-ci.yml
+    secrets: inherit
+    with:
+      tag: needs.trigger_related_workflows.outputs.release_version
+  trigger_ng_app2:
+    needs: trigger_related_workflows
+    if: needs.trigger_related_workflows.outputs.trigger_ng_app2== 'true'
+    uses: ./.github/workflows/ng-app2-sit-ci.yml
     secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
