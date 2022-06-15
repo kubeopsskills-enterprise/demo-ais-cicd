@@ -20,6 +20,7 @@ jobs:
       trigger_app_2: ${{ steps.changes-observer.outputs.trigger_app_2 }}
       trigger_ng_app1: ${{ steps.changes-observer.outputs.trigger_ng_app1 }}
       trigger_ng_app2: ${{ steps.changes-observer.outputs.trigger_ng_app2 }}
+      release_version: ${{ steps.changes-observer.outputs.release_version }}
     steps:
       - name: Set env (Triggered by tagging)
         if: github.event.base_ref=='refs/heads/main'
@@ -53,7 +54,6 @@ jobs:
                 *"net48-app2/"*)
                   echo "::set-output name=trigger_app_2::true"
                   ;;
-
                 *"ng-app1/"*)
                   echo "::set-output name=trigger_ng_app1::true"
                   ;;
