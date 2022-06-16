@@ -18,6 +18,8 @@ jobs:
     outputs:
       trigger_app_1: ${{ steps.changes-observer.outputs.trigger_app_1 }}
       trigger_app_2: ${{ steps.changes-observer.outputs.trigger_app_2 }}
+      trigger_ng_app1: ${{ steps.changes-observer.outputs.trigger_ng_app1 }}
+      trigger_ng_app2: ${{ steps.changes-observer.outputs.trigger_ng_app2 }}
       release_version: ${{ steps.changes-observer.outputs.release_version }}
     steps:
       - name: Set env (Triggered by tagging)
@@ -53,6 +55,14 @@ jobs:
                   echo "::set-output name=trigger_app_2::true"
                   ;;
 
+                *"ng-app1/"*)
+                  echo "::set-output name=trigger_ng_app1::true"
+                  ;;
+
+                *"ng-app2/"*)
+                  echo "::set-output name=trigger_ng_app2::true"
+                  ;;
+
               esac
             done
   trigger_app_1:
@@ -66,6 +76,20 @@ jobs:
     needs: trigger_related_workflows
     if: needs.trigger_related_workflows.outputs.trigger_app_2== 'true'
     uses: ./.github/workflows/net48-app2-sit-ci.yml
+    secrets: inherit
+    with:
+      tag: needs.trigger_related_workflows.outputs.release_version
+  trigger_ng_app1:
+    needs: trigger_related_workflows
+    if: needs.trigger_related_workflows.outputs.trigger_ng_app1== 'true'
+    uses: ./.github/workflows/ng-app1-sit-ci.yml
+    secrets: inherit
+    with:
+      tag: needs.trigger_related_workflows.outputs.release_version
+  trigger_ng_app2:
+    needs: trigger_related_workflows
+    if: needs.trigger_related_workflows.outputs.trigger_ng_app2== 'true'
+    uses: ./.github/workflows/ng-app2-sit-ci.yml
     secrets: inherit
     with:
       tag: needs.trigger_related_workflows.outputs.release_version
